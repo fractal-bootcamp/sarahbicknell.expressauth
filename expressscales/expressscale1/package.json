@@ -1,0 +1,17 @@
+{
+  "name": "expressscale1",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/express": "^4.17.21",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2"
+  }
+}
