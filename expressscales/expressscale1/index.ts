@@ -1,7 +1,7 @@
 import express from 'express';
 
 const app = express();
-const cookieParser = require('cookie-parser')
+import cookieParser from 'cookie-parser';
 
 
 app.use(express.urlencoded({extended: true}))
