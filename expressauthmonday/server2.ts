@@ -16,12 +16,16 @@ app.get("/", (req, res) => {
 
 
 async function isAuthed(req: Request) {
-    const userId = req.cookies.userId
+    const userId = Number(req.cookies.userId)
+    console.log(req.cookies.userId)
     if (userId) {
-        const user = await client.user.findUnique({
-        })
-        if(users.find(user => user.id === req.cookies.userId)
-    }
+         const user = await client.user.findUnique({
+            where: {
+                id: userId
+            }
+         })
+         if (user) return true
+    } 
     return false 
 }
 
@@ -31,7 +35,10 @@ app.get('/login', async (req, res) => {
 
     const isLoggedin = await isAuthed(req)
     if (isLoggedin) {
-    res.redirect('/dashboard')}
+        res.redirect('/dashboard')}
+    else {
+        res.sendFile(__dirname + '/login.html')
+    }
 })
 
 async function login(email, password) {
@@ -44,7 +51,7 @@ async function login(email, password) {
     //
     const user = await client.user.findUnique({
         where: {
-            email: submittedEmail,
+            email: email,
         }
     })
 
@@ -63,7 +70,7 @@ app.post('/login', async (req, res) => {
 
     const user = await login(email, password)
     if (!user) {
-
+        res.redirect('/signup')
     }
 
     if (user) {
@@ -77,6 +84,9 @@ app.get("/signup", async (req, res) => {
     const isLoggedin = await isAuthed(req)
     if (isLoggedin) {
     res.sendFile(__dirname + "/dashboard.html")}
+    else {
+        res.sendFile(__dirname + '/signup.html')
+    }
 
 })
 
@@ -84,9 +94,6 @@ app.get("/signup", async (req, res) => {
 app.post("/signup", async (req, res) => {
     const email = req.body.email
     const password = req.body.password 
-    
-    const user = await login (email, password)
-    if (user) res.redirect('/dashboard')
 
     const newUser = await client.user.create({
         data: {
@@ -94,10 +101,18 @@ app.post("/signup", async (req, res) => {
             password: password
         }
     })
+    res.redirect('/login')
 })
 
 app.get('/dashboard', async (req, res) => {
-    const isLoggedIn = await isAuthed(req)
+    const _isAuthed = await isAuthed(req)
+    if (_isAuthed) return res.sendFile(__dirname + "/dashboard.html")
+    return res.redirect('/login')
+})
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('userId');
+    return res.redirect('/login');
 })
 
 app.listen(
